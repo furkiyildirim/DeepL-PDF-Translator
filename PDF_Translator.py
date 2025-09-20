@@ -1,3 +1,21 @@
+import importlib
+import subprocess
+import sys
+def import_or_install(package, import_name=None):
+    """
+    Eğer kütüphane yüklü değilse pip ile yükler, sonra import eder.
+    package: pip install için kullanılacak isim
+    import_name: import için kullanılacak isim (farklıysa)
+    """
+    try:
+        return importlib.import_module(import_name or package)
+    except ImportError:
+        print(f"[INFO] {package} bulunamadı, yükleniyor...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+        return importlib.import_module(import_name or package)
+docx = import_or_install("python-docx", "docx")
+PyPDF2 = import_or_install("PyPDF2")
+requests = import_or_install("requests")
 import os
 import threading
 import math
@@ -8,9 +26,7 @@ from pathlib import Path
 import requests
 from docx import Document
 from PyPDF2 import PdfReader
-import importlib
-import subprocess
-import sys
+
 
 # ---------- Ayarlar ----------
 # DeepL endpoint (global). Eğer PRO kullanıyorsan endpoint farklı olabilir.
@@ -371,23 +387,9 @@ class TranslatorApp:
             self.translated_path = None
             self.open_btn.config(state="disabled")
 
-def import_or_install(package, import_name=None):
-    """
-    Eğer kütüphane yüklü değilse pip ile yükler, sonra import eder.
-    package: pip install için kullanılacak isim
-    import_name: import için kullanılacak isim (farklıysa)
-    """
-    try:
-        return importlib.import_module(import_name or package)
-    except ImportError:
-        print(f"[INFO] {package} bulunamadı, yükleniyor...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-        return importlib.import_module(import_name or package)
 
 if __name__ == "__main__":
-    docx = import_or_install("python-docx", "docx")
-    PyPDF2 = import_or_install("PyPDF2")
-    requests = import_or_install("requests")
+
 
     root = tk.Tk()
     app = TranslatorApp(root)
